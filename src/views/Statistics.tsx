@@ -31,6 +31,24 @@ export default function Statistics() {
     return { ...sub, minutes: mins };
   }).filter(s => s.minutes > 0).sort((a, b) => b.minutes - a.minutes);
 
+  const weeklyStats = range === 'all' ? (() => {
+    const grouped = new Map<string, { sessions: number, completedSessions: number, minutes: number, completedMinutes: number }>();
+    filteredSessions.forEach(s => {
+      const key = `${s.year}-W${s.weekNumber.toString().padStart(2, '0')}`;
+      if (!grouped.has(key)) {
+        grouped.set(key, { sessions: 0, completedSessions: 0, minutes: 0, completedMinutes: 0 });
+      }
+      const data = grouped.get(key)!;
+      data.sessions += 1;
+      data.minutes += s.durationMinutes;
+      if (s.status === 'completed') {
+        data.completedSessions += 1;
+        data.completedMinutes += s.durationMinutes;
+      }
+    });
+    return Array.from(grouped.entries()).sort((a, b) => b[0].localeCompare(a[0]));
+  })() : [];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -108,6 +126,27 @@ export default function Statistics() {
           </div>
         )}
       </div>
+
+      {range === 'all' && weeklyStats.length > 0 && (
+        <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
+          <h3 className="font-semibold text-lg mb-6">Realizacja tydzień po tygodniu</h3>
+          <div className="space-y-4">
+            {weeklyStats.map(([weekKey, stats]) => (
+              <div key={weekKey} className="flex justify-between items-center border-b border-zinc-800/50 pb-3 last:border-0 last:pb-0">
+                <span className="font-medium text-zinc-300">Tydzień {weekKey.split('-W')[1]} ({weekKey.split('-W')[0]})</span>
+                <div className="text-right text-sm">
+                  <p className="text-zinc-200">
+                    <span className="text-emerald-400 font-medium">{stats.completedSessions}</span> / {stats.sessions} sesji
+                  </p>
+                  <p className="text-zinc-500">
+                    {(stats.completedMinutes / 60).toFixed(1)} / {(stats.minutes / 60).toFixed(1)} h
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

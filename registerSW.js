@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/maturnik/sw.js', { scope: '/maturnik/' })})}

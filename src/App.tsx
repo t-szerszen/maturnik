@@ -1,12 +1,21 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Layout from './components/Layout';
+import CurrentWeek from './views/CurrentWeek';
+import Statistics from './views/Statistics';
+import TemplateEditor from './views/TemplateEditor';
+import DataManagement from './views/DataManagement';
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen p-4 flex flex-col items-center justify-center gap-4">
-        <h1 className="text-4xl font-bold text-indigo-400">Maturnik</h1>
-        <p className="text-slate-400">Inicjalizacja projektu zakończona sukcesem.</p>
-      </div>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<CurrentWeek />} />
+          <Route path="stats" element={<Statistics />} />
+          <Route path="template" element={<TemplateEditor />} />
+          <Route path="data" element={<DataManagement />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }

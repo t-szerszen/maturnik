@@ -14,11 +14,11 @@ export default function Layout() {
   const location = useLocation();
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-slate-950 text-slate-200">
+    <div className="flex flex-col md:flex-row min-h-screen bg-zinc-950 text-zinc-200">
       {/* Desktop Sidebar */}
-      <nav className="hidden md:flex flex-col w-64 border-r border-slate-800 bg-slate-950 p-4">
+      <nav className="hidden md:flex flex-col w-64 border-r border-zinc-800 bg-zinc-950 p-4">
         <div className="mb-8 px-4 mt-4">
-          <h1 className="text-2xl font-bold text-indigo-400">Maturnik</h1>
+          <h1 className="text-2xl font-bold text-emerald-400">Maturnik</h1>
         </div>
         <div className="flex-1 space-y-2">
           {navItems.map((item) => {
@@ -32,8 +32,8 @@ export default function Layout() {
                   clsx(
                     'flex items-center gap-3 px-4 py-3 rounded-xl transition-colors',
                     isActive 
-                      ? 'bg-indigo-500/10 text-indigo-400' 
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                      ? 'bg-emerald-500/10 text-emerald-400' 
+                      : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900'
                   )
                 )}
               >
@@ -53,7 +53,7 @@ export default function Layout() {
       </main>
 
       {/* Mobile Bottom Bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t border-slate-800 bg-slate-950 pb-safe z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t border-zinc-800 bg-zinc-950 pb-safe z-50">
         <div className="flex justify-around items-center p-2">
           {navItems.map((item) => {
             const Icon = item.icon;
@@ -66,8 +66,8 @@ export default function Layout() {
                   clsx(
                     'flex flex-col items-center justify-center p-2 rounded-xl min-w-[64px]',
                     isActive 
-                      ? 'text-indigo-400' 
-                      : 'text-slate-400'
+                      ? 'text-emerald-400' 
+                      : 'text-zinc-400'
                   )
                 )}
               >

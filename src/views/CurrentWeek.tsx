@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
-import { addWeeks, subWeeks } from 'date-fns';
+import { addWeeks, subWeeks, getISOWeek, getISOWeekYear } from 'date-fns';
 import { useStore } from '../store';
 import { getWeekData, formatDatePl } from '../utils/date';
 import SessionCard from '../components/SessionCard';
@@ -18,8 +18,21 @@ export default function CurrentWeek() {
   }, [weekNumber, year, generateWeekFromTemplate, days]);
 
   const nextWeek = () => setCurrentDate(prev => addWeeks(prev, 1));
-  const prevWeek = () => setCurrentDate(prev => subWeeks(prev, 1));
+  const prevWeek = () => {
+    const newDate = subWeeks(currentDate, 1);
+    const realWeek = getISOWeek(new Date());
+    const realYear = getISOWeekYear(new Date());
+    const newWeek = getISOWeek(newDate);
+    const newYear = getISOWeekYear(newDate);
+    
+    if (newYear < realYear || (newYear === realYear && newWeek < realWeek)) return;
+    setCurrentDate(newDate);
+  };
   const currentWeek = () => setCurrentDate(new Date());
+
+  const realCurrentWeek = getISOWeek(new Date());
+  const realCurrentYear = getISOWeekYear(new Date());
+  const canGoBack = year > realCurrentYear || (year === realCurrentYear && weekNumber > realCurrentWeek);
 
   const weekSessions = sessions.filter(s => s.weekNumber === weekNumber && s.year === year);
   
@@ -32,13 +45,13 @@ export default function CurrentWeek() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <button onClick={prevWeek} className="p-2 hover:bg-slate-800 rounded-lg"><ChevronLeft size={20} /></button>
+          <button onClick={prevWeek} disabled={!canGoBack} className={`p-2 rounded-lg ${canGoBack ? 'hover:bg-zinc-800' : 'opacity-30 cursor-not-allowed'}`}><ChevronLeft size={20} /></button>
           <div className="text-center min-w-[140px]">
             <h2 className="font-semibold">Tydzień {weekNumber}</h2>
-            <p className="text-xs text-slate-400">{formatDatePl(start, 'dd.MM')} - {formatDatePl(end, 'dd.MM.yyyy')}</p>
+            <p className="text-xs text-zinc-400">{formatDatePl(start, 'dd.MM')} - {formatDatePl(end, 'dd.MM.yyyy')}</p>
           </div>
-          <button onClick={nextWeek} className="p-2 hover:bg-slate-800 rounded-lg"><ChevronRight size={20} /></button>
-          <button onClick={currentWeek} className="ml-2 px-3 py-1.5 text-sm font-medium bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500/20 rounded-lg transition-colors">Bieżący</button>
+          <button onClick={nextWeek} className="p-2 hover:bg-zinc-800 rounded-lg"><ChevronRight size={20} /></button>
+          <button onClick={currentWeek} className="ml-2 px-3 py-1.5 text-sm font-medium bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 rounded-lg transition-colors">Bieżący</button>
         </div>
 
         {bufferHours > 0 && (
@@ -57,13 +70,13 @@ export default function CurrentWeek() {
           const dayName = formatDatePl(day, 'EEEE');
           
           return (
-            <div key={dayDateStr} className="bg-slate-900/50 rounded-2xl p-4 md:p-6 border border-slate-800/60 shadow-sm">
-              <h3 className="font-semibold text-lg capitalize mb-4 text-slate-200">
-                {dayName} <span className="text-sm font-normal text-slate-500 ml-2">{formatDatePl(day, 'dd.MM')}</span>
+            <div key={dayDateStr} className="bg-zinc-900/50 rounded-2xl p-4 md:p-6 border border-zinc-800/60 shadow-sm">
+              <h3 className="font-semibold text-lg capitalize mb-4 text-zinc-200">
+                {dayName} <span className="text-sm font-normal text-zinc-500 ml-2">{formatDatePl(day, 'dd.MM')}</span>
               </h3>
               
               {daySessions.length === 0 ? (
-                <p className="text-sm text-slate-500 italic px-2">Brak zaplanowanych sesji na ten dzień.</p>
+                <p className="text-sm text-zinc-500 italic px-2">Brak zaplanowanych sesji na ten dzień.</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {daySessions.map(session => (

@@ -47,30 +47,30 @@ export default function DataManagement() {
     <div className="space-y-6 max-w-2xl">
       <h2 className="text-2xl font-bold">Zarządzanie danymi</h2>
       
-      <div className="bg-slate-900/50 rounded-2xl p-6 border border-slate-800">
+      <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
         <h3 className="font-semibold text-lg flex items-center gap-2 mb-4">
-          <Download size={20} className="text-indigo-400" /> Eksport Danych
+          <Download size={20} className="text-emerald-400" /> Eksport Danych
         </h3>
-        <p className="text-slate-400 text-sm mb-4">
+        <p className="text-zinc-400 text-sm mb-4">
           Pobierz pełną kopię zapasową swoich postępów, szablonów i przedmiotów w formacie JSON.
         </p>
         <button 
           onClick={handleExport}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-medium transition-colors"
+          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium transition-colors"
         >
           Eksportuj do JSON
         </button>
       </div>
 
-      <div className="bg-slate-900/50 rounded-2xl p-6 border border-slate-800">
+      <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
         <h3 className="font-semibold text-lg flex items-center gap-2 mb-4">
           <Upload size={20} className="text-emerald-400" /> Import Danych
         </h3>
-        <p className="text-slate-400 text-sm mb-4">
+        <p className="text-zinc-400 text-sm mb-4">
           Wklej zawartość pliku JSON z kopią zapasową poniżej. Uwaga: spowoduje to nadpisanie obecnych danych!
         </p>
         <textarea 
-          className="w-full h-32 bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm text-slate-300 font-mono mb-4 focus:outline-none focus:border-indigo-500/50"
+          className="w-full h-32 bg-zinc-950 border border-zinc-700 rounded-lg p-3 text-sm text-zinc-300 font-mono mb-4 focus:outline-none focus:border-emerald-500/50"
           placeholder='{"state": { "sessions": [...], ... }}'
           value={importJson}
           onChange={e => setImportJson(e.target.value)}
@@ -87,7 +87,7 @@ export default function DataManagement() {
         <h3 className="font-semibold text-lg flex items-center gap-2 mb-4 text-red-400">
           <AlertTriangle size={20} /> Niebezpieczna strefa
         </h3>
-        <p className="text-slate-400 text-sm mb-4">
+        <p className="text-zinc-400 text-sm mb-4">
           Resetuje wszystkie ustawienia, przedmioty i sesje do wartości domyślnych. Zrób kopię zapasową przed tą akcją!
         </p>
         <button 

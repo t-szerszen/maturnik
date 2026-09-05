@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-matura-math: #3B82F6;
+  --color-inf-mobile: #10B981;
+  --color-inf-console: #F59E0B;
+  --color-inf-desktop: #8B5CF6;
+  --color-inf-web: #06B6D4;
+  --color-matura-inf: #EC4899;
+  --color-pol: #EF4444;
+  --color-ang: #6366F1;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-200 antialiased selection:bg-indigo-500/30;
+  }
+}

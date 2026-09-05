@@ -1,4 +1,4 @@
-import { startOfWeek, endOfWeek, addWeeks, subWeeks, getISOWeek, getISOWeekYear, eachDayOfInterval, format } from 'date-fns';
+import { startOfWeek, endOfWeek, getISOWeek, getISOWeekYear, eachDayOfInterval, format } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
 export const getWeekData = (date: Date) => {

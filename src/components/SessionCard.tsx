@@ -1,4 +1,4 @@
-import { ActualSession, Subject } from '../types';
+import type { ActualSession, Subject } from '../types';
 import { useStore } from '../store';
 import { Check, X, Clock } from 'lucide-react';
 import { clsx } from 'clsx';

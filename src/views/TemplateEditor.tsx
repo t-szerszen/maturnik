@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useStore } from '../store';
 import { Plus, Trash2 } from 'lucide-react';
-import { Subject, TemplateSession, SessionType } from '../types';
+import type { Subject, TemplateSession, SessionType } from '../types';
 
 const DAYS = [1, 2, 3, 4, 5, 6, 7];
 const DAY_NAMES = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'];

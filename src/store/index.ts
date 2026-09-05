@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Subject, TemplateSession, ActualSession } from '../types';
+import type { Subject, TemplateSession, ActualSession } from '../types';
 
 export const defaultSubjects: Subject[] = [
   { id: 'math', name: 'Matematyka rozszerzona', color: '#3B82F6' },

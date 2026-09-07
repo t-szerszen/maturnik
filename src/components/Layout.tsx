@@ -44,18 +44,17 @@ export default function Layout() {
               </Link>
             );
           })}
+          
+          <div className="pt-4 mt-4 border-t border-zinc-800/50">
+            <button
+              onClick={() => auth.signOut()}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors w-full text-zinc-400 hover:text-red-400 hover:bg-red-500/10"
+            >
+              <LogOut size={20} />
+              <span className="font-medium">Wyloguj</span>
+            </button>
+          </div>
         </div>
-        
-        <div className="mt-auto px-4 mb-4 text-xs text-zinc-500 text-center">
-          Zalogowano w Maturniku
-        </div>
-        <button
-          onClick={() => auth.signOut()}
-          className="flex items-center justify-center gap-2 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors w-full"
-        >
-          <LogOut size={18} />
-          <span className="font-medium">Wyloguj</span>
-        </button>
       </nav>
 
       {/* Main Content */}

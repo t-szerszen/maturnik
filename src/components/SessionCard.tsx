@@ -81,12 +81,12 @@ export default function SessionCard({ session, subject }: Props) {
       </div>
 
       <div className="mt-2">
-        <input 
-          type="text"
+        <textarea 
           placeholder="Notatka / zrealizowany materiał..."
           value={session.notes || ''}
           onChange={(e) => updateSession(session.id, { notes: e.target.value })}
-          className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50"
+          rows={2}
+          className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 resize-y min-h-[60px]"
         />
       </div>
     </div>

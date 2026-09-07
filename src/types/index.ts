@@ -2,6 +2,7 @@ export interface Subject {
   id: string;
   name: string;
   color: string;
+  weeklyGoalMinutes?: number;
 }
 
 export type SessionType = 'sesja' | 'korepetycje';

@@ -20,7 +20,7 @@ export default function TemplateEditor() {
     updateTemplate(template.filter(t => t.subjectId !== id)); // cascading delete from template
   };
 
-  const handleSubjectChange = (id: string, field: keyof Subject, value: string) => {
+  const handleSubjectChange = (id: string, field: keyof Subject, value: any) => {
     updateSubjects(subjects.map(s => s.id === id ? { ...s, [field]: value } : s));
   };
 
@@ -100,7 +100,20 @@ export default function TemplateEditor() {
                   value={sub.name} 
                   onChange={(e) => handleSubjectChange(sub.id, 'name', e.target.value)}
                   className="flex-1 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"
+                  placeholder="Nazwa przedmiotu"
                 />
+                <div className="flex items-center gap-2 shrink-0">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={sub.weeklyGoalMinutes ? sub.weeklyGoalMinutes / 60 : ''}
+                    onChange={(e) => handleSubjectChange(sub.id, 'weeklyGoalMinutes', e.target.value ? (parseFloat(e.target.value) * 60) : undefined as any)}
+                    className="w-20 bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"
+                    placeholder="Cel"
+                  />
+                  <span className="text-zinc-500 text-sm">h/tyg</span>
+                </div>
                 <button 
                   onClick={() => deleteSubject(sub.id)}
                   className="p-2 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors shrink-0"

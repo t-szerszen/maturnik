@@ -192,6 +192,55 @@ export default function TemplateEditor() {
               </div>
             );
           })}
+          {(() => {
+            let totalMinutes = 0;
+            const subjectMins: Record<string, number> = {};
+            template.forEach(t => {
+              totalMinutes += t.durationMinutes;
+              subjectMins[t.subjectId] = (subjectMins[t.subjectId] || 0) + t.durationMinutes;
+            });
+
+            return (
+              <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
+                <h3 className="font-semibold text-lg mb-4">Podsumowanie planu</h3>
+                <div className="mb-6">
+                  <p className="text-zinc-400 text-sm">Łączny czas w tygodniu</p>
+                  <p className="text-2xl font-bold text-white">{(totalMinutes / 60).toFixed(1)} h</p>
+                </div>
+                
+                <div className="space-y-4">
+                  {subjects.filter(s => subjectMins[s.id] > 0 || s.weeklyGoalMinutes).map(sub => {
+                    const plannedMins = subjectMins[sub.id] || 0;
+                    const goalMins = sub.weeklyGoalMinutes || 0;
+                    const maxVal = Math.max(plannedMins, goalMins, 1);
+                    
+                    return (
+                      <div key={sub.id}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="font-medium text-zinc-300">{sub.name}</span>
+                          <span className="text-zinc-400">
+                            <span className={plannedMins > goalMins && goalMins > 0 ? "text-amber-400" : plannedMins < goalMins && goalMins > 0 ? "text-red-400" : "text-emerald-400"}>
+                              {(plannedMins / 60).toFixed(1)}h
+                            </span>
+                            {goalMins > 0 && ` / ${(goalMins / 60).toFixed(1)}h cel`}
+                          </span>
+                        </div>
+                        <div className="w-full bg-zinc-800 rounded-full h-2 relative">
+                          {goalMins > 0 && (
+                            <div 
+                              className="absolute top-0 bottom-0 border-r-2 border-zinc-400 z-10"
+                              style={{ left: `${(goalMins / maxVal) * 100}%` }}
+                            />
+                          )}
+                          <div className="h-2 rounded-full transition-all opacity-80" style={{ width: `${(plannedMins / maxVal) * 100}%`, backgroundColor: sub.color }} />
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
     </div>

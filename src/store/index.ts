@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import type { Subject, TemplateSession, ActualSession } from '../types';
 
 export const defaultSubjects: Subject[] = [
@@ -31,9 +32,12 @@ export const defaultTemplate: TemplateSession[] = [
 ];
 
 interface AppState {
+  userId: string | null;
   subjects: Subject[];
   template: TemplateSession[];
   sessions: ActualSession[];
+  
+  initFirebaseSync: (uid: string) => Promise<void>;
   
   addSession: (session: ActualSession) => void;
   updateSession: (id: string, data: Partial<ActualSession>) => void;
@@ -49,102 +53,144 @@ interface AppState {
   resetData: () => void;
 }
 
-export const useStore = create<AppState>()(
-  persist(
-    (set, get) => ({
-      subjects: defaultSubjects,
-      template: defaultTemplate,
-      sessions: [],
+export const useStore = create<AppState>((set, get) => {
+  // Pomocnicza funkcja do zapisywania zmian w Firestore
+  const syncToFirestore = (statePartial: Partial<AppState>) => {
+    set(statePartial); // zaktualizuj stan lokalnie natychmiast
+    const state = get();
+    if (state.userId) {
+      setDoc(doc(db, 'users', state.userId), {
+        subjects: state.subjects,
+        template: state.template,
+        sessions: state.sessions
+      }).catch(err => console.error("Błąd zapisu do Firebase", err));
+    }
+  };
 
-      addSession: (session) => set((state) => ({ sessions: [...state.sessions, session] })),
-      updateSession: (id, data) => set((state) => ({
-        sessions: state.sessions.map(s => s.id === id ? { ...s, ...data } : s)
-      })),
-      deleteSession: (id) => set((state) => ({
-        sessions: state.sessions.filter(s => s.id !== id)
-      })),
+  return {
+    userId: null,
+    subjects: defaultSubjects,
+    template: defaultTemplate,
+    sessions: [],
+
+    initFirebaseSync: async (uid) => {
+      set({ userId: uid });
+      const userRef = doc(db, 'users', uid);
       
-      generateWeekFromTemplate: (weekNumber, year, dates) => {
-        const { sessions, template } = get();
-        const weekExists = sessions.some(s => s.weekNumber === weekNumber && s.year === year && s.id.startsWith('tmpl-'));
-        if (weekExists) return;
-
-        const newSessions: ActualSession[] = template.map(tmpl => {
-          const dateStr = dates[tmpl.dayOfWeek - 1].toISOString().split('T')[0];
-          return {
-            id: `tmpl-${year}-${weekNumber}-${tmpl.id}`,
-            date: dateStr,
-            weekNumber,
-            year,
-            startTime: tmpl.startTime,
-            endTime: tmpl.endTime,
-            durationMinutes: tmpl.durationMinutes,
-            subjectId: tmpl.subjectId,
-            type: tmpl.type,
-            status: 'pending',
-            notes: ''
-          };
+      const snap = await getDoc(userRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        set({ 
+          subjects: data.subjects || [],
+          template: data.template || [],
+          sessions: data.sessions || []
         });
-
-        set({ sessions: [...sessions, ...newSessions] });
-      },
-
-      updateTemplate: (template) => set({ template }),
-      updateSubjects: (subjects) => set({ subjects }),
-
-      applyTemplateToCurrentWeek: (weekNumber, year, dates) => {
-        const { sessions, template } = get();
-        
-        const retainedSessions = sessions.filter(s => {
-          if (s.weekNumber === weekNumber && s.year === year && s.id.startsWith('tmpl-')) {
-            return false; // Wipe all template sessions for the current week, including completed ones
-          }
-          return true;
+      } else {
+        await setDoc(userRef, {
+          subjects: defaultSubjects,
+          template: defaultTemplate,
+          sessions: []
         });
+      }
+    },
 
-        const newSessions: ActualSession[] = template.map(tmpl => {
-          const dateStr = dates[tmpl.dayOfWeek - 1].toISOString().split('T')[0];
-          return {
-            id: `tmpl-${year}-${weekNumber}-${tmpl.id}-${Date.now()}`,
-            date: dateStr,
-            weekNumber,
-            year,
-            startTime: tmpl.startTime,
-            endTime: tmpl.endTime,
-            durationMinutes: tmpl.durationMinutes,
-            subjectId: tmpl.subjectId,
-            type: tmpl.type,
-            status: 'pending',
-            notes: ''
-          };
-        });
+    addSession: (session) => {
+      syncToFirestore({ sessions: [...get().sessions, session] });
+    },
+    updateSession: (id, data) => {
+      syncToFirestore({
+        sessions: get().sessions.map(s => s.id === id ? { ...s, ...data } : s)
+      });
+    },
+    deleteSession: (id) => {
+      syncToFirestore({
+        sessions: get().sessions.filter(s => s.id !== id)
+      });
+    },
+    
+    generateWeekFromTemplate: (weekNumber, year, dates) => {
+      const { sessions, template } = get();
+      const weekExists = sessions.some(s => s.weekNumber === weekNumber && s.year === year && s.id.startsWith('tmpl-'));
+      if (weekExists) return;
 
-        set({ sessions: [...retainedSessions, ...newSessions] });
-      },
+      const newSessions: ActualSession[] = template.map(tmpl => {
+        const dateStr = dates[tmpl.dayOfWeek - 1].toISOString().split('T')[0];
+        return {
+          id: `tmpl-${year}-${weekNumber}-${tmpl.id}`,
+          date: dateStr,
+          weekNumber,
+          year,
+          startTime: tmpl.startTime,
+          endTime: tmpl.endTime,
+          durationMinutes: tmpl.durationMinutes,
+          subjectId: tmpl.subjectId,
+          type: tmpl.type,
+          status: 'pending',
+          notes: ''
+        };
+      });
 
-      importData: (jsonData) => {
-        try {
-          const parsed = JSON.parse(jsonData);
-          if (parsed.subjects && parsed.template && parsed.sessions) {
-            set({
-              subjects: parsed.subjects,
-              template: parsed.template,
-              sessions: parsed.sessions
-            });
-          }
-        } catch (e) {
-          console.error("Failed to parse import data", e);
+      syncToFirestore({ sessions: [...sessions, ...newSessions] });
+    },
+
+    updateTemplate: (template) => {
+      syncToFirestore({ template });
+    },
+    updateSubjects: (subjects) => {
+      syncToFirestore({ subjects });
+    },
+
+    applyTemplateToCurrentWeek: (weekNumber, year, dates) => {
+      const { sessions, template } = get();
+      
+      const retainedSessions = sessions.filter(s => {
+        if (s.weekNumber === weekNumber && s.year === year && s.id.startsWith('tmpl-')) {
+          return false;
         }
-      },
-      
-      resetData: () => set({
+        return true;
+      });
+
+      const newSessions: ActualSession[] = template.map(tmpl => {
+        const dateStr = dates[tmpl.dayOfWeek - 1].toISOString().split('T')[0];
+        return {
+          id: `tmpl-${year}-${weekNumber}-${tmpl.id}-${Date.now()}`,
+          date: dateStr,
+          weekNumber,
+          year,
+          startTime: tmpl.startTime,
+          endTime: tmpl.endTime,
+          durationMinutes: tmpl.durationMinutes,
+          subjectId: tmpl.subjectId,
+          type: tmpl.type,
+          status: 'pending',
+          notes: ''
+        };
+      });
+
+      syncToFirestore({ sessions: [...retainedSessions, ...newSessions] });
+    },
+
+    importData: (jsonData) => {
+      try {
+        const parsed = JSON.parse(jsonData);
+        if (parsed.subjects && parsed.template && parsed.sessions) {
+          syncToFirestore({
+            subjects: parsed.subjects,
+            template: parsed.template,
+            sessions: parsed.sessions
+          });
+        }
+      } catch (e) {
+        console.error("Failed to parse import data", e);
+      }
+    },
+    
+    resetData: () => {
+      syncToFirestore({
         subjects: defaultSubjects,
         template: defaultTemplate,
         sessions: []
-      })
-    }),
-    {
-      name: 'maturnik-storage',
+      });
     }
-  )
-);
+  };
+});

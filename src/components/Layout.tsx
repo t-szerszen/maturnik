@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Calendar, BarChart2, LayoutTemplate, Database, History } from 'lucide-react';
+import { Calendar, BarChart2, LayoutTemplate, Database, History, LogOut } from 'lucide-react';
+import { auth } from '../lib/firebase';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -44,6 +45,17 @@ export default function Layout() {
             );
           })}
         </div>
+        
+        <div className="mt-auto px-4 mb-4 text-xs text-zinc-500 text-center">
+          Zalogowano w Maturniku
+        </div>
+        <button
+          onClick={() => auth.signOut()}
+          className="flex items-center justify-center gap-2 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors w-full"
+        >
+          <LogOut size={18} />
+          <span className="font-medium">Wyloguj</span>
+        </button>
       </nav>
 
       {/* Main Content */}
@@ -65,18 +77,25 @@ export default function Layout() {
                 to={item.path}
                 className={twMerge(
                   clsx(
-                    'flex flex-col items-center justify-center p-2 rounded-xl min-w-[64px]',
+                    'flex flex-col items-center justify-center p-2 rounded-xl min-w-[56px]',
                     isActive 
                       ? 'text-emerald-400' 
                       : 'text-zinc-400'
                   )
                 )}
               >
-                <Icon size={24} className={isActive ? 'mb-1' : 'mb-1 opacity-70'} />
+                <Icon size={22} className={isActive ? 'mb-1' : 'mb-1 opacity-70'} />
                 <span className="text-[10px] font-medium">{item.label}</span>
               </Link>
             );
           })}
+          <button
+            onClick={() => auth.signOut()}
+            className="flex flex-col items-center justify-center p-2 rounded-xl min-w-[56px] text-red-400 opacity-80"
+          >
+            <LogOut size={22} className="mb-1" />
+            <span className="text-[10px] font-medium">Wyloguj</span>
+          </button>
         </div>
       </nav>
     </div>

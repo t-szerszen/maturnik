@@ -1,10 +1,11 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Calendar, BarChart2, LayoutTemplate, Database } from 'lucide-react';
+import { Calendar, BarChart2, LayoutTemplate, Database, History } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 const navItems = [
   { path: '/', label: 'Tydzień', icon: Calendar },
+  { path: '/history', label: 'Historia', icon: History },
   { path: '/stats', label: 'Statystyki', icon: BarChart2 },
   { path: '/template', label: 'Szablon', icon: LayoutTemplate },
   { path: '/data', label: 'Dane', icon: Database },

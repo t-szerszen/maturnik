@@ -32,8 +32,15 @@ export default function SessionCard({ session, subject }: Props) {
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: subject?.color || '#ccc' }} />
           <span className="font-semibold text-sm">{subject?.name || 'Nieznany przedmiot'}</span>
         </div>
-        <div className="text-xs px-2 py-1 rounded-full bg-zinc-800 text-zinc-300 font-medium">
-          {session.type === 'sesja' ? 'Sesja' : 'Korepetycje'}
+        <div className="flex items-center gap-1.5">
+          {session.id.startsWith('adhoc-') && (
+            <div className="text-[10px] uppercase tracking-wider px-2 py-1 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">
+              Dodatkowa
+            </div>
+          )}
+          <div className="text-xs px-2 py-1 rounded-full bg-zinc-800 text-zinc-300 font-medium">
+            {session.type === 'sesja' ? 'Sesja' : 'Korepetycje'}
+          </div>
         </div>
       </div>
 

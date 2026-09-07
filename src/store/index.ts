@@ -97,7 +97,7 @@ export const useStore = create<AppState>()(
         
         const retainedSessions = sessions.filter(s => {
           if (s.weekNumber === weekNumber && s.year === year && s.id.startsWith('tmpl-')) {
-            return s.status !== 'pending';
+            return false; // Wipe all template sessions for the current week, including completed ones
           }
           return true;
         });

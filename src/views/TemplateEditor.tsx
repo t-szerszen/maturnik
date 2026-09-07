@@ -263,10 +263,10 @@ export default function TemplateEditor() {
               <h3 className="text-xl font-bold">Zastosować szablon?</h3>
             </div>
             <p className="text-zinc-300 mb-4">
-              Szablon zostanie nałożony na <strong>bieżący tydzień</strong>. Wszystkie zaplanowane (ale jeszcze niewykonane) sesje zostaną zastąpione nowym układem.
+              Szablon całkowicie nadpisze <strong>bieżący tydzień</strong>. Nowy układ wymaże wszystkie zaplanowane na ten tydzień sesje ze starego szablonu.
             </p>
-            <p className="text-zinc-400 text-sm mb-6">
-              Oznaczone już jako wykonane lub pominięte sesje pozostaną bez zmian (nie stracisz historii w tym tygodniu). Zmiany wejdą w życie natychmiast.
+            <p className="text-red-400 font-medium text-sm mb-6">
+              UWAGA: Dotyczy to również sesji już oznaczonych jako wykonane lub pominięte w tym tygodniu (znikną wraz z notatkami). Sesje dodatkowe (Extra) nie zostaną usunięte. Zmiany wejdą w życie natychmiast.
             </p>
             <div className="flex gap-3">
               <button

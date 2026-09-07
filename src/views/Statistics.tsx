@@ -115,7 +115,6 @@ export default function Statistics() {
           <div className="space-y-4">
             {subjectStats.map(sub => {
               const maxMinutes = subjectStats[0].minutes;
-              const width = Math.max(5, (sub.minutes / maxMinutes) * 100);
               return (
                 <div key={sub.id}>
                   <div className="flex justify-between text-sm mb-1">

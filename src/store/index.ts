@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { Subject, TemplateSession, ActualSession } from '../types';
 

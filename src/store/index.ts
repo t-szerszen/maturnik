@@ -43,6 +43,8 @@ interface AppState {
   updateTemplate: (template: TemplateSession[]) => void;
   updateSubjects: (subjects: Subject[]) => void;
   
+  applyTemplateToCurrentWeek: (weekNumber: number, year: number, dates: Date[]) => void;
+
   importData: (data: string) => void;
   resetData: () => void;
 }
@@ -89,6 +91,36 @@ export const useStore = create<AppState>()(
 
       updateTemplate: (template) => set({ template }),
       updateSubjects: (subjects) => set({ subjects }),
+
+      applyTemplateToCurrentWeek: (weekNumber, year, dates) => {
+        const { sessions, template } = get();
+        
+        const retainedSessions = sessions.filter(s => {
+          if (s.weekNumber === weekNumber && s.year === year && s.id.startsWith('tmpl-')) {
+            return s.status !== 'pending';
+          }
+          return true;
+        });
+
+        const newSessions: ActualSession[] = template.map(tmpl => {
+          const dateStr = dates[tmpl.dayOfWeek - 1].toISOString().split('T')[0];
+          return {
+            id: `tmpl-${year}-${weekNumber}-${tmpl.id}-${Date.now()}`,
+            date: dateStr,
+            weekNumber,
+            year,
+            startTime: tmpl.startTime,
+            endTime: tmpl.endTime,
+            durationMinutes: tmpl.durationMinutes,
+            subjectId: tmpl.subjectId,
+            type: tmpl.type,
+            status: 'pending',
+            notes: ''
+          };
+        });
+
+        set({ sessions: [...retainedSessions, ...newSessions] });
+      },
 
       importData: (jsonData) => {
         try {

@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { useStore } from '../store';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, AlertTriangle, CalendarCheck } from 'lucide-react';
 import type { Subject, TemplateSession, SessionType } from '../types';
+import { getWeekData } from '../utils/date';
 
 const DAYS = [1, 2, 3, 4, 5, 6, 7];
 const DAY_NAMES = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'];
 
 export default function TemplateEditor() {
-  const { subjects, template, updateSubjects, updateTemplate } = useStore();
+  const { subjects, template, updateSubjects, updateTemplate, applyTemplateToCurrentWeek } = useStore();
   const [activeTab, setActiveTab] = useState<'subjects' | 'template'>('subjects');
+  const [showApplyModal, setShowApplyModal] = useState(false);
+  const { weekNumber, year, days } = getWeekData(new Date());
 
   const addSubject = () => {
     const newId = `sub-${Date.now()}`;
@@ -202,7 +205,15 @@ export default function TemplateEditor() {
 
             return (
               <div className="bg-zinc-900/50 rounded-2xl p-6 border border-zinc-800">
-                <h3 className="font-semibold text-lg mb-4">Podsumowanie planu</h3>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                  <h3 className="font-semibold text-lg">Podsumowanie planu</h3>
+                  <button 
+                    onClick={() => setShowApplyModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <CalendarCheck size={16} /> Zastosuj do bieżącego tygodnia
+                  </button>
+                </div>
                 <div className="mb-6">
                   <p className="text-zinc-400 text-sm">Łączny czas w tygodniu</p>
                   <p className="text-2xl font-bold text-white">{(totalMinutes / 60).toFixed(1)} h</p>
@@ -241,6 +252,40 @@ export default function TemplateEditor() {
               </div>
             );
           })()}
+        </div>
+      )}
+
+      {showApplyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-zinc-900 rounded-2xl max-w-md w-full border border-zinc-800 p-6 shadow-2xl">
+            <div className="flex items-center gap-3 text-amber-500 mb-4">
+              <AlertTriangle size={24} />
+              <h3 className="text-xl font-bold">Zastosować szablon?</h3>
+            </div>
+            <p className="text-zinc-300 mb-4">
+              Szablon zostanie nałożony na <strong>bieżący tydzień</strong>. Wszystkie zaplanowane (ale jeszcze niewykonane) sesje zostaną zastąpione nowym układem.
+            </p>
+            <p className="text-zinc-400 text-sm mb-6">
+              Oznaczone już jako wykonane lub pominięte sesje pozostaną bez zmian (nie stracisz historii w tym tygodniu). Zmiany wejdą w życie natychmiast.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowApplyModal(false)}
+                className="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl font-medium transition-colors"
+              >
+                Anuluj
+              </button>
+              <button
+                onClick={() => {
+                  applyTemplateToCurrentWeek(weekNumber, year, days);
+                  setShowApplyModal(false);
+                }}
+                className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-medium transition-colors"
+              >
+                Zastosuj
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

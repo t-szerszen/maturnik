@@ -1,6 +1,6 @@
 import type { ActualSession, Subject } from '../types';
 import { useStore } from '../store';
-import { Check, X, Clock } from 'lucide-react';
+import { Check, X, Clock, Star } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -80,7 +80,7 @@ export default function SessionCard({ session, subject }: Props) {
         </button>
       </div>
 
-      <div className="mt-2">
+      <div className="mt-2 space-y-3">
         <textarea 
           placeholder="Notatka / zrealizowany materiał..."
           value={session.notes || ''}
@@ -88,6 +88,52 @@ export default function SessionCard({ session, subject }: Props) {
           rows={2}
           className="w-full bg-zinc-900/50 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/50 resize-y min-h-[60px]"
         />
+
+        {session.status === 'completed' && (
+          <div className="flex flex-col gap-2 pt-2 border-t border-zinc-800/50">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-zinc-400">Samopoczucie po nauce:</span>
+              <div className="flex gap-1">
+                {(['terrible', 'bad', 'neutral', 'good', 'excellent'] as const).map(mood => {
+                  const emojis = { terrible: '😫', bad: '🙁', neutral: '😐', good: '🙂', excellent: '😄' };
+                  return (
+                    <button
+                      key={mood}
+                      onClick={() => updateSession(session.id, { mood })}
+                      className={twMerge(
+                        "p-1 text-lg rounded-md transition-all grayscale opacity-40 hover:grayscale-0 hover:opacity-100 hover:bg-zinc-800",
+                        session.mood === mood && "grayscale-0 opacity-100 bg-zinc-800 ring-1 ring-zinc-700"
+                      )}
+                      title={mood}
+                    >
+                      {emojis[mood]}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-zinc-400">Ocena efektywności:</span>
+              <div className="flex gap-1">
+                {([1, 2, 3, 4, 5] as const).map(rating => (
+                  <button
+                    key={rating}
+                    onClick={() => updateSession(session.id, { efficiency: rating })}
+                    className="p-1 text-zinc-600 hover:text-amber-400 transition-colors"
+                  >
+                    <Star 
+                      size={18} 
+                      className={twMerge(
+                        session.efficiency && session.efficiency >= rating ? "fill-amber-400 text-amber-400" : ""
+                      )}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

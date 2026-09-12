@@ -3,6 +3,7 @@ import { AlertCircle, Plus, X } from 'lucide-react';
 import { useStore } from '../store';
 import { getWeekData, formatDatePl } from '../utils/date';
 import SessionCard from '../components/SessionCard';
+import { format } from 'date-fns';
 import type { ActualSession } from '../types';
 
 export default function CurrentWeek() {
@@ -82,10 +83,10 @@ export default function CurrentWeek() {
       {/* Days List */}
       <div className="space-y-6">
         {days.map((day) => {
-          const dayDateStr = day.toISOString().split('T')[0];
+          const dayDateStr = format(day, 'yyyy-MM-dd');
           const daySessions = weekSessions.filter(s => s.date === dayDateStr).sort((a, b) => a.startTime.localeCompare(b.startTime));
           const dayName = formatDatePl(day, 'EEEE');
-          const isToday = dayDateStr === new Date().toISOString().split('T')[0];
+          const isToday = dayDateStr === format(new Date(), 'yyyy-MM-dd');
           
           return (
             <div key={dayDateStr} className={`bg-zinc-900/50 rounded-2xl p-4 md:p-6 border ${isToday ? 'border-emerald-500/30' : 'border-zinc-800/60'} shadow-sm relative`}>

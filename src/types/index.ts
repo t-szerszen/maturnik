@@ -30,4 +30,6 @@ export interface ActualSession {
   type: SessionType;
   status: SessionStatus;
   notes: string;
+  mood?: 'terrible' | 'bad' | 'neutral' | 'good' | 'excellent';
+  efficiency?: 1 | 2 | 3 | 4 | 5;
 }

@@ -20,11 +20,11 @@ export default function Statistics() {
   const skipped = filteredSessions.filter(s => s.status === 'skipped');
   const pending = filteredSessions.filter(s => s.status === 'pending');
 
-  const totalMinutesPlanned = filteredSessions.reduce((acc, s) => acc + s.durationMinutes, 0);
+  const totalMinutesPlanned = filteredSessions.filter(s => !s.id.startsWith('adhoc-')).reduce((acc, s) => acc + s.durationMinutes, 0);
   const totalMinutesCompleted = completed.reduce((acc, s) => acc + s.durationMinutes, 0);
   const totalExtraMinutes = completed.filter(s => s.id.startsWith('adhoc-')).reduce((acc, s) => acc + s.durationMinutes, 0);
   
-  const progressPercent = totalMinutesPlanned > 0 ? Math.round(((totalMinutesCompleted - totalExtraMinutes) / totalMinutesPlanned) * 100) : 0;
+  const progressPercent = totalMinutesPlanned > 0 ? Math.round((totalMinutesCompleted / totalMinutesPlanned) * 100) : (totalMinutesCompleted > 0 ? 100 : 0);
 
   const subjectStats = subjects.map(sub => {
     const subSessions = completed.filter(s => s.subjectId === sub.id);
@@ -79,7 +79,7 @@ export default function Statistics() {
           </div>
           <p className="text-3xl font-bold text-white">{(totalMinutesCompleted / 60).toFixed(1)} <span className="text-lg text-zinc-400 font-normal">godzin</span></p>
           <div className="text-sm text-zinc-500 mt-1 flex flex-col gap-1">
-            <p>Z planu: {((totalMinutesCompleted - totalExtraMinutes) / 60).toFixed(1)} h / {(totalMinutesPlanned / 60).toFixed(1)} h</p>
+            <p>Z planu: {(totalMinutesCompleted / 60).toFixed(1)} h / {(totalMinutesPlanned / 60).toFixed(1)} h</p>
             {totalExtraMinutes > 0 && <p className="text-amber-400/80">Dodatkowo: {(totalExtraMinutes / 60).toFixed(1)} h</p>}
           </div>
         </div>
@@ -93,7 +93,7 @@ export default function Statistics() {
             <p className="text-3xl font-bold text-white">{progressPercent}%</p>
           </div>
           <div className="w-full bg-zinc-800 rounded-full h-2 mt-3 overflow-hidden">
-            <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${progressPercent}%` }} />
+            <div className="bg-emerald-500 h-2 rounded-full" style={{ width: `${Math.min(100, progressPercent)}%` }} />
           </div>
         </div>
 

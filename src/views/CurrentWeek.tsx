@@ -99,7 +99,7 @@ export default function CurrentWeek() {
                   onClick={() => setShowAddModal(dayDateStr)}
                   className="flex items-center gap-1 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded-lg text-xs transition-colors"
                 >
-                  <Plus size={14} /> Dodaj sesję (Odrób dług)
+                  <Plus size={14} /> Dodaj sesję
                 </button>
               </div>
               

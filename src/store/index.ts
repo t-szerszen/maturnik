@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { format } from 'date-fns';
 import type { Subject, TemplateSession, ActualSession } from '../types';
 
 export const defaultSubjects: Subject[] = [
@@ -114,7 +115,7 @@ export const useStore = create<AppState>((set, get) => {
       if (weekExists) return;
 
       const newSessions: ActualSession[] = template.map(tmpl => {
-        const dateStr = dates[tmpl.dayOfWeek - 1].toISOString().split('T')[0];
+        const dateStr = format(dates[tmpl.dayOfWeek - 1], 'yyyy-MM-dd');
         return {
           id: `tmpl-${year}-${weekNumber}-${tmpl.id}`,
           date: dateStr,
@@ -151,7 +152,7 @@ export const useStore = create<AppState>((set, get) => {
       });
 
       const newSessions: ActualSession[] = template.map(tmpl => {
-        const dateStr = dates[tmpl.dayOfWeek - 1].toISOString().split('T')[0];
+        const dateStr = format(dates[tmpl.dayOfWeek - 1], 'yyyy-MM-dd');
         return {
           id: `tmpl-${year}-${weekNumber}-${tmpl.id}-${Date.now()}`,
           date: dateStr,
